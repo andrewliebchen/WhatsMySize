@@ -3,17 +3,18 @@ App = React.createClass({
 
   getMeteorData() {
     return {
-      currentUser: Meteor.user()
+      currentUser: Meteor.user(),
+      shirts: Shirts.find().fetch()
     };
   },
 
   render() {
-    let {currentUser} = this.data;
     return (
       <div className="wrapper"> 
         <AccountsUIWrapper/>
-        <a href={`wardrobes/${currentUser._id}`}>Your wardrobe</a>
-        Content
+        <a href={`wardrobes/${this.data.currentUser._id}`}>Your wardrobe</a>
+        <input type="search"/>
+        <ShirtsList shirts={this.data.shirts}/>
       </div>
     );
   }
@@ -26,8 +27,14 @@ Wardrobe = React.createClass({
     let currentUserId = Meteor.user()._id;
     return {
       currentUser: Meteor.user(),
-      shirts: Shirts.find({wardrobe: currentUserId}).fetch()
+      shirts: Shirts.find().fetch(),
+      currentUsersShirts: Shirts.find({wardrobe: currentUserId}).fetch()
     };
+  },
+
+  matchingShirts() {
+    // Get a list of users with matching fields
+    // Get shirts from each of those users
   },
 
   render() {
@@ -36,7 +43,11 @@ Wardrobe = React.createClass({
         <header>
           <h1>{`${this.data.currentUser.profile.name}'s`} Wardrobe</h1>
         </header>
-        <ShirtsList shirts={this.data.shirts}/>
+        <h3>Your shirts</h3>
+        <ShirtsList shirts={this.data.currentUsersShirts}/>
+        <h3>Matching shirts</h3>
+        {/*<ShirtsList shirts={this.data.shirts}/>*/}
+        <h3>Add shirts</h3>
         <NewShirt wardrobe={this.data.currentUser._id}/>
       </div>
     );
