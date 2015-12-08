@@ -1,3 +1,5 @@
+const _ = lodash;
+
 Meteor.publish('profile', (id) => {
   return Meteor.users.find({_id: id});
 });
@@ -22,5 +24,7 @@ Meteor.publish('matchingShirts', (id) => {
 
   matchingUsers = _.uniq(_.flatten(matchingUsers));
 
-  return Shirts.find({wardrobe: {$in: matchingUsers}});
+  return Shirts.find({wardrobe: {
+    $in: matchingUsers
+  }});
 });

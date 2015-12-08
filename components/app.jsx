@@ -33,7 +33,6 @@ Wardrobe = React.createClass({
   },
 
   render() {
-    console.log(this.data.user);
     return (
       <div className="wrapper">
         <header>
@@ -63,19 +62,21 @@ ShirtsList = React.createClass({
                 <th>Retailer</th>
                 <th>Size</th>
                 <th>Fit</th>
-                <th>Wardrobe</th>
+                {/*<th>Wardrobe</th>*/}
               </tr>
             </thead>
             <tbody>
               {this.props.shirts.map((shirt, i) => {
-                let wardrobe = Meteor.users.find({_id: shirt.wardrobe}).fetch();
+                // let wardrobe = Meteor.users.find({_id: shirt.wardrobe}).fetch();
                 return (
                   <tr key={i}>
                     <td>{shirt.retailer}</td>
                     <td>{shirt.size}</td>
                     <td>{shirt.fit}</td>
                     <td>
-                      <a href={`/wardrobes/${wardrobe[0]._id}`}>{wardrobe[0].profile.name}</a>
+                      {/*
+                        <a href={`/wardrobes/${wardrobe[0]._id}`}>{wardrobe[0].profile.name}</a>
+                        */}
                     </td>
                   </tr>
                 );
@@ -136,11 +137,15 @@ WardrobeShirts = React.createClass({
 
     return {
       loading: !shirts.ready(),
-      shirts: Shirts.find().fetch()
+      shirts: Shirts.find({wardrobe: this.props.id}).fetch()
     };
   },
 
   render() {
+    if(this.data.loading) {
+      return <div>loading...</div>
+    }
+
     return (
       <ShirtsList shirts={this.data.shirts}/>
     );
@@ -155,11 +160,17 @@ MatchingShirts = React.createClass({
 
     return {
       loading: !shirts.ready(),
-      shirts: Shirts.find().fetch()
+      shirts: Shirts.find({wardrobe: {
+        $not: this.props.id
+      }}).fetch()
     };
   },
 
   render() {
+    if(this.data.loading) {
+      return <div>loading...</div>
+    }
+
     return (
       <ShirtsList shirts={this.data.shirts}/>
     );
