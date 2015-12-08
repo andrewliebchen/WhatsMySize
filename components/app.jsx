@@ -3,18 +3,28 @@ App = React.createClass({
 
   getMeteorData() {
     return {
-      currentUser: Meteor.user(),
       shirts: Shirts.find({}).fetch()
     };
+  },
+
+  handleAddSeeds() {
+    Meteor.call('seed');
   },
 
   render() {
     return (
       <div className="container"> 
-        <AccountsUIWrapper/>
-        <a href={`wardrobes/${this.data.currentUser._id}`}>Your wardrobe</a>
-        <input type="search"/>
+        <div className="form-group">
+          <input type="search" className="form-control" placeholder="Non-functional search"/>
+        </div>
         <ShirtsList shirts={this.data.shirts}/>
+        <footer className="well">
+          <button
+            className="btn btn-default"
+            onClick={this.handleAddSeeds}>
+            Add seed shirts
+          </button>
+        </footer>
       </div>
     );
   }
@@ -22,8 +32,18 @@ App = React.createClass({
 
 if(Meteor.isClient) {
   FlowRouter.route('/', {
+    subscriptions() {
+      this.register('shirts', Meteor.subscribe('shirts'));
+    },
+
     action() {
-      ReactLayout.render(App);
+      FlowRouter.subsReady('shirts', () => {
+        ReactLayout.render(Layout, {
+          content() {
+            return <App/>;
+          }
+        });
+      });
     }
   });
 }

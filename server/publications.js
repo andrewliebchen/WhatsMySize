@@ -1,5 +1,12 @@
 const _ = lodash;
 
+Meteor.publish('shirts', () => {
+  return [
+    Meteor.users.find(),
+    Shirts.find({})
+  ];
+});
+
 Meteor.publish('wardrobe', (userId) => {
   let shirts = Shirts.find({}).fetch();
   let currentUserShirts = Shirts.find({wardrobe: userId}).fetch();
@@ -21,7 +28,7 @@ Meteor.publish('wardrobe', (userId) => {
   let matchingUsersQuery = matchingUsers.push(userId);
 
   return [
-    Meteor.users.find({_id: userId}),
+    Meteor.users.find(),
     Shirts.find({wardrobe: {$in: matchingUsers}})
   ];
 });

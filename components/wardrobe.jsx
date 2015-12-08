@@ -49,9 +49,14 @@ if(Meteor.isClient) {
     subscriptions(params) {
       this.register('wardrobe', Meteor.subscribe('wardrobe', params._id));
     },
+
     action(params) {
       FlowRouter.subsReady('wardrobe', () => {
-        ReactLayout.render(Wardrobe);
+        ReactLayout.render(Layout, {
+          content() {
+            return <Wardrobe/>;
+          }
+        });
       });
     }
   });
