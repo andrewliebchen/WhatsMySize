@@ -28,7 +28,11 @@ Wardrobe = React.createClass({
   getMeteorData() {
     let userId = FlowRouter.getParam('_id');
     return {
-      user: Meteor.users.findOne(userId)
+      user: Meteor.users.findOne(userId),
+      wardrobeShirts: Shirts.find({wardrobe: userId}).fetch(),
+      matchingShirts: Shirts.find({wardrobe: {
+        $not: userId
+      }}).fetch()
     };
   },
 
@@ -39,10 +43,10 @@ Wardrobe = React.createClass({
           <h1>{`${this.data.user.profile.name}'s`} Wardrobe</h1>
         </header>
         <h3>Your shirts</h3>
-        <WardrobeShirts id={this.data.user._id}/>
+        <ShirtsList shirts={this.data.wardrobeShirts}/>
 
         <h3>Matching shirts</h3>
-        <MatchingShirts id={this.data.user._id}/>
+        <ShirtsList shirts={this.data.matchingShirts}/>
 
         <h3>Add shirts</h3>
         <NewShirt wardrobe={this.data.user._id}/>
@@ -129,54 +133,6 @@ NewShirt = React.createClass({
   }
 });
 
-WardrobeShirts = React.createClass({
-  mixins: [ReactMeteorData],
-
-  getMeteorData() {
-    let shirts = Meteor.subscribe('wardrobe', this.props.id);
-
-    return {
-      loading: !shirts.ready(),
-      shirts: Shirts.find({wardrobe: this.props.id}).fetch()
-    };
-  },
-
-  render() {
-    if(this.data.loading) {
-      return <div>loading...</div>
-    }
-
-    return (
-      <ShirtsList shirts={this.data.shirts}/>
-    );
-  }
-});
-
-MatchingShirts = React.createClass({
-  mixins: [ReactMeteorData],
-
-  getMeteorData() {
-    let shirts = Meteor.subscribe('matchingShirts', this.props.id);
-
-    return {
-      loading: !shirts.ready(),
-      shirts: Shirts.find({wardrobe: {
-        $not: this.props.id
-      }}).fetch()
-    };
-  },
-
-  render() {
-    if(this.data.loading) {
-      return <div>loading...</div>
-    }
-
-    return (
-      <ShirtsList shirts={this.data.shirts}/>
-    );
-  }
-});
-
 if(Meteor.isClient) {
   FlowRouter.route('/', {
     action() {
@@ -186,10 +142,10 @@ if(Meteor.isClient) {
 
   FlowRouter.route('/wardrobes/:_id', {
     subscriptions(params) {
-      this.register('profile', Meteor.subscribe('profile', params._id));
+      this.register('wardrobe', Meteor.subscribe('wardrobe', params._id));
     },
     action(params) {
-      FlowRouter.subsReady('profile', () => {
+      FlowRouter.subsReady('wardrobe', () => {
         ReactLayout.render(Wardrobe);
       });
     }
