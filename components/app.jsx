@@ -26,44 +26,27 @@ Wardrobe = React.createClass({
   mixins: [ReactMeteorData],
 
   getMeteorData() {
-    let shirts = Shirts.find({}).fetch();
-    let currentUserId = Meteor.user()._id;
-    let currentUserShirts = Shirts.find({wardrobe: currentUserId}).fetch();
-
-    // Get a list of users with shirts matching fields
-    // Get shirts from each of those users
-    // This can move into a publication
-    let matchingUsers = [];
-    _.forEach(currentUserShirts, (shirt, i) => {
-      matchingUsers.push(_.pluck(_.filter(shirts, {
-        'size': shirt.size,
-        'fit': shirt.fit
-      }), 'wardrobe'));
-    });
-
-    matchingUsers = _.uniq(_.flatten(matchingUsers));
-
+    let userId = FlowRouter.getParam('_id');
     return {
-      currentUser: Meteor.user(),
-      currentUserShirts: currentUserShirts,
-      matchingShirts: Shirts.find({wardrobe: {$in: matchingUsers}}).fetch()
+      user: Meteor.users.findOne(userId)
     };
   },
 
   render() {
+    console.log(this.data.user);
     return (
       <div className="wrapper">
         <header>
-          <h1>{`${this.data.currentUser.profile.name}'s`} Wardrobe</h1>
+          <h1>{`${this.data.user.profile.name}'s`} Wardrobe</h1>
         </header>
         <h3>Your shirts</h3>
-        <ShirtsList shirts={this.data.currentUserShirts}/>
+        <WardrobeShirts id={this.data.user._id}/>
 
         <h3>Matching shirts</h3>
-        <ShirtsList shirts={this.data.matchingShirts}/>
+        <MatchingShirts id={this.data.user._id}/>
 
         <h3>Add shirts</h3>
-        <NewShirt wardrobe={this.data.currentUser._id}/>
+        <NewShirt wardrobe={this.data.user._id}/>
       </div>
     );
   }
@@ -91,7 +74,9 @@ ShirtsList = React.createClass({
                     <td>{shirt.retailer}</td>
                     <td>{shirt.size}</td>
                     <td>{shirt.fit}</td>
-                    <td>{wardrobe[0].profile.name}</td>
+                    <td>
+                      <a href={`/wardrobes/${wardrobe[0]._id}`}>{wardrobe[0].profile.name}</a>
+                    </td>
                   </tr>
                 );
               })}
@@ -143,6 +128,44 @@ NewShirt = React.createClass({
   }
 });
 
+WardrobeShirts = React.createClass({
+  mixins: [ReactMeteorData],
+
+  getMeteorData() {
+    let shirts = Meteor.subscribe('wardrobe', this.props.id);
+
+    return {
+      loading: !shirts.ready(),
+      shirts: Shirts.find().fetch()
+    };
+  },
+
+  render() {
+    return (
+      <ShirtsList shirts={this.data.shirts}/>
+    );
+  }
+});
+
+MatchingShirts = React.createClass({
+  mixins: [ReactMeteorData],
+
+  getMeteorData() {
+    let shirts = Meteor.subscribe('matchingShirts', this.props.id);
+
+    return {
+      loading: !shirts.ready(),
+      shirts: Shirts.find().fetch()
+    };
+  },
+
+  render() {
+    return (
+      <ShirtsList shirts={this.data.shirts}/>
+    );
+  }
+});
+
 if(Meteor.isClient) {
   FlowRouter.route('/', {
     action() {
@@ -151,8 +174,13 @@ if(Meteor.isClient) {
   });
 
   FlowRouter.route('/wardrobes/:_id', {
+    subscriptions(params) {
+      this.register('profile', Meteor.subscribe('profile', params._id));
+    },
     action(params) {
-      ReactLayout.render(Wardrobe);
+      FlowRouter.subsReady('profile', () => {
+        ReactLayout.render(Wardrobe);
+      });
     }
   });
 }
