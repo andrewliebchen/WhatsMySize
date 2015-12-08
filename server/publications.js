@@ -14,8 +14,10 @@ Meteor.publish('wardrobe', (userId) => {
     }), 'wardrobe'));
   });
 
+  // Flatten the array of matching users and get unique values
   matchingUsers = _.uniq(_.flatten(matchingUsers));
 
+  // Add in the current user Id to the array
   let matchingUsersQuery = matchingUsers.push(userId);
 
   return [

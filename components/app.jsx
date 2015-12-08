@@ -1,5 +1,3 @@
-const _ = lodash;
-
 App = React.createClass({
   mixins: [ReactMeteorData],
 
@@ -22,132 +20,10 @@ App = React.createClass({
   }
 });
 
-Wardrobe = React.createClass({
-  mixins: [ReactMeteorData],
-
-  getMeteorData() {
-    let userId = FlowRouter.getParam('_id');
-    return {
-      user: Meteor.users.findOne(userId),
-      wardrobeShirts: Shirts.find({wardrobe: userId}).fetch(),
-      matchingShirts: Shirts.find({wardrobe: {
-        $not: userId
-      }}).fetch()
-    };
-  },
-
-  render() {
-    return (
-      <div className="wrapper">
-        <header>
-          <h1>{`${this.data.user.profile.name}'s`} Wardrobe</h1>
-        </header>
-        <h3>Your shirts</h3>
-        <ShirtsList shirts={this.data.wardrobeShirts}/>
-
-        <h3>Matching shirts</h3>
-        <ShirtsList shirts={this.data.matchingShirts}/>
-
-        <h3>Add shirts</h3>
-        <NewShirt wardrobe={this.data.user._id}/>
-      </div>
-    );
-  }
-});
-
-ShirtsList = React.createClass({
-  render() {
-    return (
-      <div className="shirts">
-        {this.props.shirts.length ?
-          <table>
-            <thead>
-              <tr>
-                <th>Retailer</th>
-                <th>Size</th>
-                <th>Fit</th>
-                {/*<th>Wardrobe</th>*/}
-              </tr>
-            </thead>
-            <tbody>
-              {this.props.shirts.map((shirt, i) => {
-                // let wardrobe = Meteor.users.find({_id: shirt.wardrobe}).fetch();
-                return (
-                  <tr key={i}>
-                    <td>{shirt.retailer}</td>
-                    <td>{shirt.size}</td>
-                    <td>{shirt.fit}</td>
-                    <td>
-                      {/*
-                        <a href={`/wardrobes/${wardrobe[0]._id}`}>{wardrobe[0].profile.name}</a>
-                        */}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        : <p>No shirts</p>}
-    </div>
-    );
-  }
-});
-
-NewShirt = React.createClass({
-  handleAddShirt() {
-    let retailer = ReactDOM.findDOMNode(this.refs.retailer);
-    let size = ReactDOM.findDOMNode(this.refs.size);
-    let fit = ReactDOM.findDOMNode(this.refs.fit);
-
-    Shirts.insert({
-      wardrobe: this.props.wardrobe,
-      retailer: retailer.value,
-      size: size.value,
-      fit: fit.value,
-      created_at: Date.now()
-    });
-
-    retailer.value = '';
-    size.value = '';
-    fit.value = '';
-  },
-
-  render() {
-    return (
-      <div className="new-shirt">
-        <div className="form-group">
-          <label>Retailer</label>
-          <input type="text" ref="retailer" placeholder="Brooks Brothers" required/>
-        </div>
-        <div className="form-group">
-          <label>Size</label>
-          <input type="text" ref="size" placeholder="Medium" required/>
-        </div>
-        <div className="form-group">
-          <label>Fit</label>
-          <input type="text" ref="fit" placeholder="Slim"/>
-        </div>
-        <button onClick={this.handleAddShirt}>Add shirt</button>
-      </div>
-    );
-  }
-});
-
 if(Meteor.isClient) {
   FlowRouter.route('/', {
     action() {
       ReactLayout.render(App);
-    }
-  });
-
-  FlowRouter.route('/wardrobes/:_id', {
-    subscriptions(params) {
-      this.register('wardrobe', Meteor.subscribe('wardrobe', params._id));
-    },
-    action(params) {
-      FlowRouter.subsReady('wardrobe', () => {
-        ReactLayout.render(Wardrobe);
-      });
     }
   });
 }
