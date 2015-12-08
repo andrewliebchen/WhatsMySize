@@ -26,7 +26,7 @@ Wardrobe = React.createClass({
     return (
       <div className="container">
         <header>
-          <h1>{`${this.data.user.profile.name}'s`} Wardrobe</h1>
+          <h2>{`${this.data.user.profile.name}'s`} Wardrobe</h2>
         </header>
         <ul className="nav nav-tabs">
           <li className={this.state.tab === 0 ? 'active' : ''}>
@@ -38,7 +38,6 @@ Wardrobe = React.createClass({
         </ul>
         {this.state.tab === 0 ? <ShirtsList shirts={this.data.matchingShirts}/> : null}
         {this.state.tab === 1 ? <ShirtsList shirts={this.data.wardrobeShirts}/> : null}
-        <NewShirt wardrobe={this.data.user._id}/>
       </div>
     );
   }

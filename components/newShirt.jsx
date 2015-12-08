@@ -1,9 +1,19 @@
 NewShirt = React.createClass({
+  mixins: [ReactMeteorData],
+
   propTypes: {
     wardrobe: React.PropTypes.string.isRequired
   },
 
-  handleAddShirt() {
+  getMeteorData() {
+    return {
+      alert: Session.get('alert')
+    };
+  },
+
+  handleAddShirt(event) {
+    event.preventDefault();
+
     let retailer = ReactDOM.findDOMNode(this.refs.retailer);
     let size = ReactDOM.findDOMNode(this.refs.size);
     let fit = ReactDOM.findDOMNode(this.refs.fit);
@@ -16,7 +26,7 @@ NewShirt = React.createClass({
       created_at: Date.now()
     }, (error, success) => {
       if(success) {
-        Session.set('flash', 'Shirt added');
+        Session.set('alert', 'Shirt added, playa!');
         retailer.value = '';
         size.value = '';
         fit.value = '';
@@ -26,11 +36,11 @@ NewShirt = React.createClass({
 
   render() {
     return (
-      <form className="panel panel-default">
-        <header className="panel-heading">
-          <h3 className="panel-title">Add a shirt to your wardrobe</h3>
-        </header>
-        <div className="panel-body">
+      <form>
+        <div className="modal-body">
+          {this.data.alert ?
+            <div className="alert alert-success">{this.data.alert}</div>
+          : null}
           <div className="form-group">
             <label>Retailer</label>
             <input
@@ -58,12 +68,12 @@ NewShirt = React.createClass({
               placeholder="Slim"/>
           </div>
         </div>
-        <footer className="panel-footer">
-          <button
+        <footer className="modal-footer">
+          <input
+            type="submit"
+            value="Add shirt"
             className="btn btn-primary"
-            onClick={this.handleAddShirt}>
-            Add shirt
-          </button>
+            onClick={this.handleAddShirt}/>
         </footer>
       </form>
     );
