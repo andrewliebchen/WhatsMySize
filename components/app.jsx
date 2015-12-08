@@ -32,7 +32,7 @@ Wardrobe = React.createClass({
 
     // Get a list of users with shirts matching fields
     // Get shirts from each of those users
-
+    // This can move into a publication
     let matchingUsers = [];
     _.forEach(currentUserShirts, (shirt, i) => {
       matchingUsers.push(_.pluck(_.filter(shirts, {
@@ -42,7 +42,6 @@ Wardrobe = React.createClass({
     });
 
     matchingUsers = _.uniq(_.flatten(matchingUsers));
-    console.log(matchingUsers);
 
     return {
       currentUser: Meteor.user(),
@@ -59,8 +58,10 @@ Wardrobe = React.createClass({
         </header>
         <h3>Your shirts</h3>
         <ShirtsList shirts={this.data.currentUserShirts}/>
+
         <h3>Matching shirts</h3>
         <ShirtsList shirts={this.data.matchingShirts}/>
+
         <h3>Add shirts</h3>
         <NewShirt wardrobe={this.data.currentUser._id}/>
       </div>
@@ -112,7 +113,8 @@ NewShirt = React.createClass({
       wardrobe: this.props.wardrobe,
       retailer: retailer.value,
       size: size.value,
-      fit: fit.value
+      fit: fit.value,
+      created_at: Date.now()
     });
 
     retailer.value = '';
