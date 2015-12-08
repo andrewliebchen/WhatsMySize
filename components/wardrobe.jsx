@@ -12,19 +12,32 @@ Wardrobe = React.createClass({
     };
   },
 
+  getInitialState() {
+    return {
+      tab: 0
+    };
+  },
+
+  handleTabNav(tab) {
+    this.setState({tab: tab});
+  },
+
   render() {
     return (
-      <div className="wrapper">
+      <div className="container">
         <header>
           <h1>{`${this.data.user.profile.name}'s`} Wardrobe</h1>
         </header>
-        <h3>Your shirts</h3>
-        <ShirtsList shirts={this.data.wardrobeShirts}/>
-
-        <h3>Matching shirts</h3>
-        <ShirtsList shirts={this.data.matchingShirts}/>
-
-        <h3>Add shirts</h3>
+        <ul className="nav nav-tabs">
+          <li className={this.state.tab === 0 ? 'active' : ''}>
+            <a onClick={this.handleTabNav.bind(null, 0)}>Matching shirts</a>
+          </li>
+          <li className={this.state.tab === 1 ? 'active' : ''}>
+            <a onClick={this.handleTabNav.bind(null, 1)}>My shirts</a>
+          </li>
+        </ul>
+        {this.state.tab === 0 ? <ShirtsList shirts={this.data.matchingShirts}/> : null}
+        {this.state.tab === 1 ? <ShirtsList shirts={this.data.wardrobeShirts}/> : null}
         <NewShirt wardrobe={this.data.user._id}/>
       </div>
     );

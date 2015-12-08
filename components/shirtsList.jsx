@@ -1,9 +1,9 @@
 ShirtsList = React.createClass({
   render() {
     return (
-      <div className="shirts">
+      <div>
         {this.props.shirts.length ?
-          <table>
+          <table className="table">
             <thead>
               <tr>
                 <th>Retailer</th>
@@ -20,11 +20,11 @@ ShirtsList = React.createClass({
                     <td>{shirt.retailer}</td>
                     <td>{shirt.size}</td>
                     <td>{shirt.fit}</td>
+                    {/*
                     <td>
-                      {/*
-                        <a href={`/wardrobes/${wardrobe[0]._id}`}>{wardrobe[0].profile.name}</a>
-                        */}
+                      <a href={`/wardrobes/${wardrobe[0]._id}`}>{wardrobe[0].profile.name}</a>
                     </td>
+                    */}
                   </tr>
                 );
               })}

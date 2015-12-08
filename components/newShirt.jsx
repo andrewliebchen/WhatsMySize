@@ -19,21 +19,46 @@ NewShirt = React.createClass({
 
   render() {
     return (
-      <div className="new-shirt">
-        <div className="form-group">
-          <label>Retailer</label>
-          <input type="text" ref="retailer" placeholder="Brooks Brothers" required/>
+      <form className="panel panel-default">
+        <header className="panel-heading">
+          <h3 className="panel-title">Add a shirt to your wardrobe</h3>
+        </header>
+        <div className="panel-body">
+          <div className="form-group">
+            <label>Retailer</label>
+            <input
+              type="text"
+              className="form-control"
+              ref="retailer"
+              placeholder="Brooks Brothers"
+              required/>
+          </div>
+          <div className="form-group">
+            <label>Size</label>
+            <input
+              type="text"
+              className="form-control"
+              ref="size"
+              placeholder="Medium"
+              required/>
+          </div>
+          <div className="form-group">
+            <label>Fit</label>
+            <input
+              type="text"
+              className="form-control"
+              ref="fit"
+              placeholder="Slim"/>
+          </div>
         </div>
-        <div className="form-group">
-          <label>Size</label>
-          <input type="text" ref="size" placeholder="Medium" required/>
-        </div>
-        <div className="form-group">
-          <label>Fit</label>
-          <input type="text" ref="fit" placeholder="Slim"/>
-        </div>
-        <button onClick={this.handleAddShirt}>Add shirt</button>
-      </div>
+        <footer className="panel-footer">
+          <button
+            className="btn btn-primary"
+            onClick={this.handleAddShirt}>
+            Add shirt
+          </button>
+        </footer>
+      </form>
     );
   }
 });

@@ -10,7 +10,7 @@ App = React.createClass({
 
   render() {
     return (
-      <div className="wrapper"> 
+      <div className="container"> 
         <AccountsUIWrapper/>
         <a href={`wardrobes/${this.data.currentUser._id}`}>Your wardrobe</a>
         <input type="search"/>
