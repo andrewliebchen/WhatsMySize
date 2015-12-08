@@ -1,10 +1,12 @@
+const _ = lodash;
+
 App = React.createClass({
   mixins: [ReactMeteorData],
 
   getMeteorData() {
     return {
       currentUser: Meteor.user(),
-      shirts: Shirts.find().fetch()
+      shirts: Shirts.find({}).fetch()
     };
   },
 
@@ -24,17 +26,29 @@ Wardrobe = React.createClass({
   mixins: [ReactMeteorData],
 
   getMeteorData() {
+    let shirts = Shirts.find({}).fetch();
     let currentUserId = Meteor.user()._id;
+    let currentUserShirts = Shirts.find({wardrobe: currentUserId}).fetch();
+
+    // Get a list of users with shirts matching fields
+    // Get shirts from each of those users
+
+    let matchingUsers = [];
+    _.forEach(currentUserShirts, (shirt, i) => {
+      matchingUsers.push(_.pluck(_.filter(shirts, {
+        'size': shirt.size,
+        'fit': shirt.fit
+      }), 'wardrobe'));
+    });
+
+    matchingUsers = _.uniq(_.flatten(matchingUsers));
+    console.log(matchingUsers);
+
     return {
       currentUser: Meteor.user(),
-      shirts: Shirts.find().fetch(),
-      currentUsersShirts: Shirts.find({wardrobe: currentUserId}).fetch()
+      currentUserShirts: currentUserShirts,
+      matchingShirts: Shirts.find({wardrobe: {$in: matchingUsers}}).fetch()
     };
-  },
-
-  matchingShirts() {
-    // Get a list of users with matching fields
-    // Get shirts from each of those users
   },
 
   render() {
@@ -44,9 +58,9 @@ Wardrobe = React.createClass({
           <h1>{`${this.data.currentUser.profile.name}'s`} Wardrobe</h1>
         </header>
         <h3>Your shirts</h3>
-        <ShirtsList shirts={this.data.currentUsersShirts}/>
+        <ShirtsList shirts={this.data.currentUserShirts}/>
         <h3>Matching shirts</h3>
-        {/*<ShirtsList shirts={this.data.shirts}/>*/}
+        <ShirtsList shirts={this.data.matchingShirts}/>
         <h3>Add shirts</h3>
         <NewShirt wardrobe={this.data.currentUser._id}/>
       </div>
