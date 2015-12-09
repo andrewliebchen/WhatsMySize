@@ -24,11 +24,13 @@ Layout = React.createClass({
           <div className="container">
             <a className="navbar-brand" href="/">What's My Size?</a>
             <ul className="nav navbar-nav">
-              <li className={this.data.currentUser._id === FlowRouter.getParam('_id') ? 'active' : null}>
-                <a href={`wardrobes/${this.data.currentUser._id}`}>
-                  Your wardrobe
-                </a>
-              </li>
+              {this.data.currentUser ?
+                <li className={this.data.currentUser._id === FlowRouter.getParam('_id') ? 'active' : null}>
+                  <a href={`wardrobes/${this.data.currentUser._id}`}>
+                    Your wardrobe
+                  </a>
+                </li>
+              : null}
             </ul>
             <div className="navbar-right">
               <button className="btn btn-primary" onClick={this.handleNewShirtToggle}>
