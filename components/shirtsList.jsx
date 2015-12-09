@@ -27,7 +27,7 @@ ShirtsList = React.createClass({
                     <td>
                       {wardrobe ?
                         <a href={`/wardrobes/${wardrobe._id}`}>
-                          {wardrobe.profile.name}
+                          View wardrobe
                         </a>
                       : null}
                     </td>
